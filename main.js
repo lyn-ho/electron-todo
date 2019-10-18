@@ -1,5 +1,5 @@
 const path = require('path')
-const { app } = require('electron')
+const { app, ipcMain } = require('electron')
 
 const Window = require('./Window')
 const DataStore = require('./DataStore')
@@ -11,13 +11,38 @@ const todosData = new DataStore({ name: 'Todos Main' })
 function main() {
   let mainWindow = new Window({ file: path.join('renderer', 'index.html') })
 
-  todosData
-    .addTodo('create todo app')
-    .addTodo('another todo')
-    .addTodo('one more todo')
-    .addTodo('another todo')
+  let addTodoWin
 
-  console.log(todosData.todos)
+  mainWindow.once('show', () => {
+    mainWindow.webContents.send('todos', todosData.todos)
+  })
+
+  ipcMain.on('add-todo-window', () => {
+    if (!addTodoWin) {
+      addTodoWin = new Window({
+        file: path.join('renderer', 'add.html'),
+        width: 400,
+        height: 400,
+        parent: mainWindow,
+      })
+
+      addTodoWin.on('closed', () => {
+        addTodoWin = null
+      })
+    }
+  })
+
+  ipcMain.on('add-todo', (_, todo) => {
+    const updatedTodos = todosData.addTodo(todo).todos
+
+    mainWindow.send('todos', updatedTodos)
+  })
+
+  ipcMain.on('delete-todo', (_, todo) => {
+    const updatedTodos = todosData.deleteTodo(todo).todos
+
+    mainWindow.send('todos', updatedTodos)
+  })
 }
 
 app.on('ready', main)
