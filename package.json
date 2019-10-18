@@ -1,0 +1,22 @@
+{
+  "name": "electron-todo",
+  "version": "1.0.0",
+  "description": "An electron to-do app",
+  "main": "main.js",
+  "repository": "git@github.com:lyn-ho/electron-todo.git",
+  "author": "Lyn Ho <lyn4develop@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "devtron": "^1.4.0",
+    "standard": "^14.3.1"
+  },
+  "dependencies": {
+    "electron": "^6.0.12",
+    "electron-reload": "^1.5.0",
+    "electron-store": "^5.0.0",
+    "spectre.css": "^0.5.8"
+  }
+}
